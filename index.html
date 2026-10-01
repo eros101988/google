@@ -3,84 +3,635 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFC 5星評論極速生成器</title>
+
+    <title>NFC Google 評論連結產生器</title>
+
     <style>
-        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { max-width: 480px; margin: 20px auto; padding: 16px; background-color: #f2f2f7; color: #1c1c1e; }
-        .card { background: #ffffff; padding: 24px; border-radius: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-        h2 { margin-top: 0; font-size: 20px; text-align: center; color: #000; }
-        label { font-size: 14px; font-weight: 600; display: block; margin-bottom: 8px; color: #3c3c43; }
-        input { width: 100%; padding: 14px; border: 1px solid #c6c6c8; border-radius: 10px; font-size: 15px; margin-bottom: 16px; outline: none; }
-        .btn { width: 100%; background-color: #007aff; color: white; border: none; padding: 14px; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 10px; }
-        .btn-success { background-color: #34c759; }
-        .btn-test { background-color: #ff9500; }
-        .result-box { margin: 12px 0 16px 0; padding: 12px; background: #f2f2f7; border-radius: 8px; word-break: break-all; font-family: monospace; font-size: 13px; color: #000; border: 1px solid #e5e5ea; }
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            max-width: 520px;
+            margin: 20px auto;
+            padding: 16px;
+            background-color: #f2f2f7;
+            color: #1c1c1e;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 18px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 20px;
+            text-align: center;
+            color: #000;
+        }
+
+        .description {
+            font-size: 13px;
+            color: #8e8e93;
+            line-height: 1.5;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+            color: #3c3c43;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #c6c6c8;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 12px;
+            outline: none;
+            background: white;
+        }
+
+        input:focus {
+            border-color: #007aff;
+        }
+
+        .btn {
+            width: 100%;
+            background-color: #007aff;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .btn:disabled {
+            background-color: #a0a0a0;
+            cursor: not-allowed;
+        }
+
+        .btn-success {
+            background-color: #34c759;
+        }
+
+        .btn-test {
+            background-color: #ff9500;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 14px;
+            color: #8e8e93;
+            padding: 15px 0;
+            display: none;
+        }
+
+        .error {
+            background: #fff2f2;
+            color: #d70015;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .results {
+            margin-top: 18px;
+        }
+
+        .place-card {
+            border: 1px solid #e5e5ea;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #fff;
+        }
+
+        .place-name {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .place-address {
+            font-size: 13px;
+            color: #636366;
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+
+        .select-btn {
+            width: 100%;
+            border: none;
+            background: #f2f2f7;
+            color: #007aff;
+            font-weight: 600;
+            padding: 11px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .selected-business {
+            margin-top: 18px;
+            padding: 14px;
+            background: #f2f2f7;
+            border-radius: 10px;
+        }
+
+        .selected-title {
+            font-size: 12px;
+            color: #8e8e93;
+            margin-bottom: 4px;
+        }
+
+        .selected-name {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .selected-address {
+            font-size: 13px;
+            color: #636366;
+            margin-top: 4px;
+        }
+
+        .result-box {
+            margin: 12px 0 16px 0;
+            padding: 12px;
+            background: #f2f2f7;
+            border-radius: 8px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 12px;
+            color: #000;
+            border: 1px solid #e5e5ea;
+        }
+
+        #outputArea {
+            margin-top: 20px;
+        }
     </style>
 </head>
+
 <body>
 
 <div class="card">
-    <h2>NFC 5星評論極速生成器</h2>
 
-    <label for="placeInput">輸入 Place ID 或店名：</label>
-    <p style="font-size: 13px; color: #8e8e93; margin-top: -4px; margin-bottom: 12px;">
-        不知道 Place ID？<a href="https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder" target="_blank" style="color: #007aff; text-decoration: none; font-weight: bold;">點此開啟官方查詢工具</a>
-    </p>
-    <input type="text" id="placeInput" placeholder="貼上 Place ID (ChIJ...) 或輸入店名">
+    <h2>NFC Google 評論連結產生器</h2>
 
-    <button class="btn" onclick="handleGenerate()">⚡ 生成 5 星網址</button>
-
-    <div id="outputArea" style="display:none;">
-        <label>生成結果：</label>
-        <div class="result-box" id="resultUrl"></div>
-        <button class="btn btn-test" onclick="testUrl()">🧪 測試連結（確認跳出 5 星彈窗）</button>
-        <button class="btn btn-success" onclick="copyToClipboard()">📋 複製網址 (準備燒錄 NFC)</button>
+    <div class="description">
+        搜尋 Google 商家並取得官方撰寫評論連結，
+        可直接寫入 NFC。
     </div>
+
+    <label for="placeInput">
+        搜尋商家
+    </label>
+
+    <input
+        type="text"
+        id="placeInput"
+        placeholder="例如：鼎泰豐 信義店"
+        autocomplete="off"
+    >
+
+    <button
+        id="searchButton"
+        class="btn"
+        onclick="searchPlace()"
+    >
+        🔍 搜尋 Google 商家
+    </button>
+
+    <div
+        id="loading"
+        class="loading"
+    >
+        正在搜尋 Google 商家...
+    </div>
+
+    <div
+        id="error"
+        class="error"
+    ></div>
+
+    <div
+        id="results"
+        class="results"
+    ></div>
+
+    <div
+        id="outputArea"
+        style="display:none;"
+    >
+
+        <div class="selected-business">
+
+            <div class="selected-title">
+                已選擇商家
+            </div>
+
+            <div
+                id="selectedName"
+                class="selected-name"
+            ></div>
+
+            <div
+                id="selectedAddress"
+                class="selected-address"
+            ></div>
+
+        </div>
+
+        <label style="margin-top:18px;">
+            Google 官方評論連結
+        </label>
+
+        <div
+            class="result-box"
+            id="resultUrl"
+        ></div>
+
+        <button
+            class="btn btn-test"
+            onclick="testUrl()"
+        >
+            🧪 測試評論連結
+        </button>
+
+        <button
+            class="btn btn-success"
+            onclick="copyToClipboard()"
+        >
+            📋 複製網址
+        </button>
+
+    </div>
+
 </div>
 
+
 <script>
-    document.getElementById('placeInput').addEventListener('input', function(e) {
-        let val = e.target.value.trim();
-        let match = val.match(/ChIJ[a-zA-Z0-9_-]{23,}/);
-        if (match) {
-            processPlaceId(match[0]);
+
+const input = document.getElementById("placeInput");
+
+
+// ===============================
+// Enter 直接搜尋
+// ===============================
+
+input.addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+        searchPlace();
+    }
+
+});
+
+
+// ===============================
+// 搜尋 Google 商家
+// ===============================
+
+async function searchPlace() {
+
+    const query = input.value.trim();
+
+    if (!query) {
+        showError("請輸入商家名稱。");
+        return;
+    }
+
+
+    const searchButton =
+        document.getElementById("searchButton");
+
+    const loading =
+        document.getElementById("loading");
+
+    const results =
+        document.getElementById("results");
+
+
+    hideError();
+
+    document.getElementById("outputArea").style.display =
+        "none";
+
+    results.innerHTML = "";
+
+    loading.style.display = "block";
+
+    searchButton.disabled = true;
+
+
+    try {
+
+        const response = await fetch("/api/search-place", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                query: query
+            })
+
+        });
+
+
+        const data = await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Google 商家搜尋失敗"
+            );
+
         }
+
+
+        if (
+            !data.places ||
+            data.places.length === 0
+        ) {
+
+            showError(
+                "找不到符合的 Google 商家，請嘗試輸入更完整的店名或地區。"
+            );
+
+            return;
+
+        }
+
+
+        renderResults(data.places);
+
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        showError(
+            error.message ||
+            "搜尋發生錯誤，請稍後再試。"
+        );
+
+    }
+
+    finally {
+
+        loading.style.display = "none";
+        searchButton.disabled = false;
+
+    }
+
+}
+
+
+
+// ===============================
+// 顯示搜尋結果
+// ===============================
+
+function renderResults(places) {
+
+    const results =
+        document.getElementById("results");
+
+    results.innerHTML = "";
+
+
+    places.forEach(place => {
+
+        const card =
+            document.createElement("div");
+
+        card.className = "place-card";
+
+
+        const name =
+            document.createElement("div");
+
+        name.className = "place-name";
+
+        name.textContent =
+            place.name ||
+            "未命名商家";
+
+
+        const address =
+            document.createElement("div");
+
+        address.className = "place-address";
+
+        address.textContent =
+            place.address ||
+            "沒有地址資料";
+
+
+        const button =
+            document.createElement("button");
+
+        button.className = "select-btn";
+
+        button.textContent =
+            "選擇這家商家";
+
+
+        button.onclick = function() {
+
+            selectPlace(place);
+
+        };
+
+
+        card.appendChild(name);
+        card.appendChild(address);
+        card.appendChild(button);
+
+        results.appendChild(card);
+
     });
 
-    function handleGenerate() {
-        const input = document.getElementById('placeInput').value.trim();
-        if (!input) {
-            alert('請輸入店名或貼上 Place ID！');
-            return;
-        }
+}
 
-        let match = input.match(/ChIJ[a-zA-Z0-9_-]{23,}/);
-        if (match) {
-            processPlaceId(match[0]);
-            return;
-        }
 
-        const searchUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(input)}`;
-        window.open(searchUrl, '_blank');
+
+// ===============================
+// 選擇商家
+// ===============================
+
+function selectPlace(place) {
+
+    if (!place.writeAReviewUri) {
+
+        showError(
+            "Google 沒有提供這家商家的評論連結。"
+        );
+
+        return;
+
     }
 
-    function processPlaceId(placeId) {
-        const finalUrl = `https://search.google.com/local/writereview?placeid=${placeId}&hl=zh-TW`;
-        document.getElementById('resultUrl').innerText = finalUrl;
-        document.getElementById('outputArea').style.display = 'block';
-    }
 
-    function testUrl() {
-        const urlText = document.getElementById('resultUrl').innerText;
-        window.open(urlText, '_blank');
-    }
+    document.getElementById("selectedName")
+        .textContent =
+        place.name;
 
-    function copyToClipboard() {
-        const urlText = document.getElementById('resultUrl').innerText;
-        navigator.clipboard.writeText(urlText).then(() => {
-            alert('網址已複製！可以直接貼進 NFC Tools 燒錄！');
+
+    document.getElementById("selectedAddress")
+        .textContent =
+        place.address;
+
+
+    document.getElementById("resultUrl")
+        .textContent =
+        place.writeAReviewUri;
+
+
+    document.getElementById("outputArea")
+        .style.display =
+        "block";
+
+
+    // 選完之後把搜尋結果收起來
+    document.getElementById("results")
+        .innerHTML = "";
+
+
+    // 自動滑到結果
+    document.getElementById("outputArea")
+        .scrollIntoView({
+            behavior: "smooth",
+            block: "start"
         });
+
+}
+
+
+
+// ===============================
+// 測試 URL
+// ===============================
+
+function testUrl() {
+
+    const url =
+        document.getElementById("resultUrl")
+        .textContent
+        .trim();
+
+
+    if (!url) {
+        return;
     }
+
+
+    window.location.href = url;
+
+}
+
+
+
+// ===============================
+// 複製 URL
+// ===============================
+
+async function copyToClipboard() {
+
+    const url =
+        document.getElementById("resultUrl")
+        .textContent
+        .trim();
+
+
+    if (!url) {
+        return;
+    }
+
+
+    try {
+
+        await navigator.clipboard.writeText(url);
+
+        alert(
+            "評論網址已複製！可以直接寫入 NFC。"
+        );
+
+    }
+
+    catch (error) {
+
+        // 舊瀏覽器備用方法
+
+        const textarea =
+            document.createElement("textarea");
+
+        textarea.value = url;
+
+        document.body.appendChild(textarea);
+
+        textarea.select();
+
+        document.execCommand("copy");
+
+        textarea.remove();
+
+        alert(
+            "評論網址已複製！可以直接寫入 NFC。"
+        );
+
+    }
+
+}
+
+
+
+// ===============================
+// Error
+// ===============================
+
+function showError(message) {
+
+    const errorBox =
+        document.getElementById("error");
+
+    errorBox.textContent = message;
+
+    errorBox.style.display = "block";
+
+}
+
+
+function hideError() {
+
+    document.getElementById("error")
+        .style.display =
+        "none";
+
+}
+
 </script>
 
 </body>
