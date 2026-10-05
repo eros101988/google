@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { ArrowLeft, Copy, ExternalLink, RefreshCw, BarChart2 } from 'lucide-react'
 import { CopyUrlButton } from '@/components/CopyUrlButton'
+import { SyncStatusBadge, SyncButton, EditDestinationForm } from '@/components/NfcActions'
 
 export default async function NfcDetailPage({ params }: { params: { id: string } }) {
   const supabase = createClient()
@@ -67,10 +68,9 @@ export default async function NfcDetailPage({ params }: { params: { id: string }
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-lg font-semibold text-gray-900">卡片設定</h2>
-              <button className="text-blue-600 text-sm font-medium hover:underline flex items-center">
-                <RefreshCw className="w-4 h-4 mr-1" />
-                更換 Destination URL
-              </button>
+              <div className="flex gap-4">
+                <SyncButton cardId={card.id} />
+              </div>
             </div>
             
             <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2 text-sm">
@@ -82,8 +82,21 @@ export default async function NfcDetailPage({ params }: { params: { id: string }
                 <dt className="text-gray-500">Short Code</dt>
                 <dd className="font-mono text-gray-900 mt-1">{card.short_code}</dd>
               </div>
+              <div>
+                <dt className="text-gray-500">Redirect Network 狀態</dt>
+                <dd className="mt-1">
+                  <SyncStatusBadge 
+                    status={card.redirect_sync_status} 
+                    lastSyncedAt={card.redirect_last_synced_at}
+                    error={card.redirect_sync_error}
+                  />
+                </dd>
+              </div>
               <div className="sm:col-span-2">
-                <dt className="text-gray-500">目前 Destination URL</dt>
+                <div className="flex justify-between items-center">
+                  <dt className="text-gray-500">目前 Destination URL</dt>
+                  <EditDestinationForm cardId={card.id} currentUrl={card.destination_url} />
+                </div>
                 <dd className="font-medium text-gray-900 mt-1 break-all">
                   <a href={card.destination_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                     {card.destination_url}

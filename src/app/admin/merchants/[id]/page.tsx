@@ -1,7 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { ArrowLeft, Plus, Edit2, ExternalLink } from 'lucide-react'
+import { ArrowLeft, Plus, Edit2, ExternalLink, RefreshCw } from 'lucide-react'
 import { notFound } from 'next/navigation'
+import { BatchSyncButton } from '@/components/BatchSyncButton'
 
 export default async function MerchantDetailPage({ params }: { params: { id: string } }) {
   const supabase = createClient()
@@ -69,15 +70,18 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
         {/* NFC Cards */}
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+            <div className="p-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <h2 className="text-lg font-semibold text-gray-900">旗下 NFC 卡</h2>
-              <Link 
-                href={`/admin/nfc/new?merchant_id=${merchant.id}`}
-                className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg font-medium hover:bg-blue-100 transition-colors flex items-center text-sm"
-              >
-                <Plus className="w-4 h-4 mr-1" />
-                新增 NFC 卡
-              </Link>
+              <div className="flex items-center gap-4">
+                <BatchSyncButton cards={nfcCards || []} />
+                <Link 
+                  href={`/admin/nfc/new?merchant_id=${merchant.id}`}
+                  className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg font-medium hover:bg-blue-100 transition-colors flex items-center text-sm"
+                >
+                  <Plus className="w-4 h-4 mr-1" />
+                  新增 NFC 卡
+                </Link>
+              </div>
             </div>
             
             <div className="divide-y divide-gray-100">

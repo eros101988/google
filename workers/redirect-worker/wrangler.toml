@@ -1,0 +1,14 @@
+name = "nfc-redirect-worker"
+main = "src/index.ts"
+compatibility_date = "2023-10-16"
+
+# Development environment configuration
+# [[kv_namespaces]]
+# binding = "REDIRECTS_KV"
+# id = "<YOUR_DEV_KV_ID>"
+
+# Production environment configuration
+# [env.production]
+# [[env.production.kv_namespaces]]
+# binding = "REDIRECTS_KV"
+# id = "<YOUR_PROD_KV_ID>"

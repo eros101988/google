@@ -6,15 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
-// Generate random short code
-function generateShortCode(length = 5) {
-  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789' // removed similar looking characters
-  let result = ''
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length))
-  }
-  return result
-}
+import { createNfcCard } from '@/app/actions/nfc'
 
 export default function NewNfcPage() {
   const searchParams = useSearchParams()
@@ -71,37 +63,18 @@ export default function NewNfcPage() {
       return
     }
 
-    let isUnique = false
-    let code = ''
-    
-    // Ensure uniqueness
-    while (!isUnique) {
-      code = generateShortCode()
-      const { count } = await supabase.from('nfc_cards').select('*', { count: 'exact', head: true }).eq('short_code', code)
-      if (count === 0) isUnique = true
-    }
+    const formData = new FormData()
+    formData.append('merchantId', merchantId)
+    formData.append('label', label)
+    formData.append('destinationUrl', destinationUrl)
 
-    const baseUrl = process.env.NEXT_PUBLIC_REDIRECT_BASE_URL || 'https://go.example.com'
-    const shortUrl = `${baseUrl}/r/${code}`
+    const result = await createNfcCard(formData)
 
-    const { data, error: insertError } = await supabase
-      .from('nfc_cards')
-      .insert({
-        merchant_id: merchantId,
-        short_code: code,
-        short_url: shortUrl,
-        destination_url: destinationUrl,
-        label: label.trim() || '未命名 NFC',
-        status: 'active'
-      })
-      .select()
-      .single()
-
-    if (insertError) {
-      setError(insertError.message)
+    if (result.error) {
+      setError(result.error)
       setLoading(false)
     } else {
-      router.push(`/admin/nfc/${data.id}`)
+      router.push(`/admin/nfc/${result.cardId}`)
       router.refresh()
     }
   }
